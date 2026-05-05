@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio — Creative Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F5F0E8;
+    --ink: #1A1612;
+    --rust: #C44B2E;
+    --gold: #D4A853;
+    --sage: #7A8C74;
+    --paper: #EDE8DC;
+    --shadow: rgba(26,22,18,0.12);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--rust);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+    mix-blend-mode: multiply;
+  }
+  .cursor-ring {
+    width: 40px; height: 40px;
+    border: 1.5px solid var(--rust);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.3s, height 0.3s;
+    opacity: 0.6;
+  }
+  body:hover .cursor { opacity: 1; }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 24px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    mix-blend-mode: normal;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-style: italic;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+  }
+  .nav-links a:hover { opacity: 1; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 48px 80px 48px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rust);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.3s;
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(4rem, 7vw, 7rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.5s;
+  }
+  .hero-name em {
+    font-style: italic;
+    color: var(--rust);
+  }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(26,22,18,0.65);
+    max-width: 360px;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.7s;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cream);
+    background: var(--ink);
+    padding: 18px 36px;
+    text-decoration: none;
+    position: relative;
+    transition: transform 0.3s;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards 0.9s;
+    width: fit-content;
+  }
+  .hero-cta::after {
+    content: '';
+    position: absolute;
+    inset: 4px -4px -4px 4px;
+    border: 1.5px solid var(--ink);
+    z-index: -1;
+    transition: transform 0.3s;
+  }
+  .hero-cta:hover { transform: translate(-2px, -2px); }
+  .hero-cta:hover::after { transform: translate(2px, 2px); }
+  .hero-cta svg { transition: transform 0.3s; }
+  .hero-cta:hover svg { transform: translateX(4px); }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-right::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--paper);
+  }
+  .hero-portrait {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .portrait-placeholder {
+    width: 70%;
+    aspect-ratio: 3/4;
+    background: linear-gradient(160deg, #D4C5B0 0%, #B8A898 40%, #9A8878 100%);
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 1.2s ease forwards 0.4s;
+  }
+  .portrait-placeholder::after {
+    content: 'FOTOĞRAF';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .hero-decoration {
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(8rem, 18vw, 18rem);
+    font-weight: 900;
+    font-style: italic;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(26,22,18,0.07);
+    right: -2%;
+    bottom: -4%;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 3;
+    white-space: nowrap;
+  }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards 1.5s;
+  }
+  .scroll-line {
+    width: 1px; height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--ink));
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  .scroll-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.4;
+    writing-mode: vertical-rl;
+  }
+
+  /* ABOUT */
+  .about {
+    padding: 140px 48px;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 80px;
+    position: relative;
+  }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rust);
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    padding-top: 8px;
+    border-top: 1px solid var(--rust);
+    width: fit-content;
+  }
+  .about-content {}
+  .about-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 40px;
+  }
+  .about-headline em { font-style: italic; color: var(--rust); }
+  .about-text {
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.85;
+    color: rgba(26,22,18,0.7);
+    max-width: 600px;
+    margin-bottom: 24px;
+  }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 56px;
+  }
+  .skill-item {
+    background: var(--paper);
+    padding: 20px 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: rgba(26,22,18,0.65);
+    border-left: 2px solid transparent;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .skill-item:hover {
+    border-left-color: var(--rust);
+    background: var(--cream);
+  }
+
+  /* WORK */
+  .work {
+    padding: 80px 0 140px;
+    position: relative;
+  }
+  .work-header {
+    padding: 0 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 60px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    line-height: 1;
+  }
+  .project-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: rgba(26,22,18,0.4);
+  }
+
+  .projects-list {}
+  .project-item {
+    display: grid;
+    grid-template-columns: 60px 1fr 320px 120px;
+    align-items: center;
+    gap: 32px;
+    padding: 32px 48px;
+    border-top: 1px solid rgba(26,22,18,0.1);
+    cursor: none;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .project-item::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 100%;
+    background: var(--paper);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 0;
+  }
+  .project-item:hover::before { transform: scaleY(1); }
+  .project-item > * { position: relative; z-index: 1; }
+
+  .project-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(26,22,18,0.3);
+    letter-spacing: 0.1em;
+  }
+  .project-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    transition: color 0.3s;
+  }
+  .project-item:hover .project-title { color: var(--rust); }
+  .project-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    background: rgba(26,22,18,0.06);
+    color: rgba(26,22,18,0.55);
+    transition: background 0.3s, color 0.3s;
+  }
+  .project-item:hover .tag {
+    background: rgba(196,75,46,0.1);
+    color: var(--rust);
+  }
+  .project-arrow {
+    font-size: 1.2rem;
+    text-align: right;
+    opacity: 0;
+    transform: translateX(-12px);
+    transition: opacity 0.3s, transform 0.3s;
+    color: var(--rust);
+  }
+  .project-item:hover .project-arrow { opacity: 1; transform: translateX(0); }
+  .projects-list .project-item:last-child { border-bottom: 1px solid rgba(26,22,18,0.1); }
+
+  /* STATS */
+  .stats {
+    padding: 100px 48px;
+    background: var(--ink);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background-clip: content-box;
+  }
+  .stat-item {
+    background: var(--ink);
+    padding: 48px 40px;
+    border-right: 1px solid rgba(245,240,232,0.08);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 5vw, 5rem);
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .stat-num span { color: var(--rust); }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,0.35);
+  }
+
+  /* CONTACT */
+  .contact {
+    padding: 140px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 100px;
+    align-items: center;
+  }
+  .contact-left {}
+  .contact-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 24px;
+  }
+  .contact-headline em { font-style: italic; color: var(--rust); }
+  .contact-sub {
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.75;
+    color: rgba(26,22,18,0.6);
+    margin-bottom: 48px;
+  }
+  .contact-email {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rust);
+    padding-bottom: 4px;
+    transition: color 0.3s;
+  }
+  .contact-email:hover { color: var(--rust); }
+
+  .contact-right {}
+  .contact-form {}
+  .form-group {
+    margin-bottom: 24px;
+  }
+  .form-group label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(26,22,18,0.45);
+    margin-bottom: 10px;
+  }
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    background: var(--paper);
+    border: none;
+    border-bottom: 1.5px solid rgba(26,22,18,0.15);
+    padding: 14px 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.3s;
+    resize: none;
+    cursor: none;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-bottom-color: var(--rust);
+  }
+  .form-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cream);
+    background: var(--rust);
+    padding: 18px 40px;
+    border: none;
+    cursor: none;
+    position: relative;
+    transition: transform 0.3s;
+    margin-top: 16px;
+  }
+  .form-submit::after {
+    content: '';
+    position: absolute;
+    inset: 4px -4px -4px 4px;
+    border: 1.5px solid var(--rust);
+    z-index: -1;
+    transition: transform 0.3s;
+  }
+  .form-submit:hover { transform: translate(-2px, -2px); }
+  .form-submit:hover::after { transform: translate(2px, 2px); }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(26,22,18,0.1);
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--ink);
+  }
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: rgba(26,22,18,0.35);
+  }
+  .footer-links { display: flex; gap: 28px; }
+  .footer-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(26,22,18,0.5);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .footer-links a:hover { color: var(--rust); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(1); }
+    50% { opacity: 0.9; transform: scaleY(1.1); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-left { padding: 120px 24px 60px; }
+    .hero-right { height: 400px; }
+    .about { grid-template-columns: 1fr; padding: 80px 24px; gap: 40px; }
+    .section-label { position: static; }
+    .skills-grid { grid-template-columns: 1fr 1fr; }
+    .project-item { grid-template-columns: 40px 1fr; gap: 16px; padding: 24px; }
+    .project-tags, .project-arrow { display: none; }
+    .work-header { padding: 0 24px; }
+    .stats { grid-template-columns: 1fr 1fr; padding: 60px 24px; }
+    .contact { grid-template-columns: 1fr; padding: 80px 24px; gap: 60px; }
+    footer { flex-direction: column; gap: 24px; text-align: center; padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="#" class="nav-logo">Adın Soyadın</a>
+  <ul class="nav-links">
+    <li><a href="#work">İşler</a></li>
+    <li><a href="#about">Hakkımda</a></li>
+    <li><a href="#contact">İletişim</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">✦ Yaratıcı Geliştirici & Tasarımcı</p>
+    <h1 class="hero-name">
+      Adın<br>
+      <em>Soyadın</em>
+    </h1>
+    <p class="hero-desc">
+      Dijital deneyimler tasarlıyor, güzel ve işlevsel ürünler hayata geçiriyorum. Estetik ve kod arasındaki ince çizgide yaşıyorum.
+    </p>
+    <a href="#work" class="hero-cta">
+      İşlerimi Gör
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </a>
+  </div>
+  <div class="hero-right">
+    <div class="hero-portrait">
+      <div class="portrait-placeholder"></div>
+    </div>
+  </div>
+  <div class="hero-decoration">2025</div>
+  <div class="hero-scroll">
+    <span class="scroll-text">Aşağı Kaydır</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section class="work" id="work">
+  <div class="work-header">
+    <h2 class="section-title reveal">Seçili<br><em style="font-style:italic; color:var(--rust)">İşler</em></h2>
+    <span class="project-count reveal">06 Proje</span>
+  </div>
+  <div class="projects-list">
+    <div class="project-item reveal">
+      <span class="project-num">01</span>
+      <h3 class="project-title">Marka Kimliği Projesi</h3>
+      <div class="project-tags">
+        <span class="tag">Branding</span>
+        <span class="tag">UI Design</span>
+        <span class="tag">Figma</span>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+    <div class="project-item reveal">
+      <span class="project-num">02</span>
+      <h3 class="project-title">E-Ticaret Platformu</h3>
+      <div class="project-tags">
+        <span class="tag">React</span>
+        <span class="tag">Node.js</span>
+        <span class="tag">Full Stack</span>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+    <div class="project-item reveal">
+      <span class="project-num">03</span>
+      <h3 class="project-title">Mobil Uygulama Tasarımı</h3>
+      <div class="project-tags">
+        <span class="tag">iOS</span>
+        <span class="tag">UX Research</span>
+        <span class="tag">Prototyping</span>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+    <div class="project-item reveal">
+      <span class="project-num">04</span>
+      <h3 class="project-title">Kurumsal Web Sitesi</h3>
+      <div class="project-tags">
+        <span class="tag">Next.js</span>
+        <span class="tag">Animation</span>
+        <span class="tag">CMS</span>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+    <div class="project-item reveal">
+      <span class="project-num">05</span>
+      <h3 class="project-title">Veri Görselleştirme</h3>
+      <div class="project-tags">
+        <span class="tag">D3.js</span>
+        <span class="tag">Data Viz</span>
+        <span class="tag">Dashboard</span>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+    <div class="project-item reveal">
+      <span class="project-num">06</span>
+      <h3 class="project-title">Yaratıcı Kampanya</h3>
+      <div class="project-tags">
+        <span class="tag">Art Direction</span>
+        <span class="tag">Motion</span>
+        <span class="tag">3D</span>
+      </div>
+      <div class="project-arrow">→</div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item reveal">
+    <div class="stat-num">5<span>+</span></div>
+    <div class="stat-label">Yıl Deneyim</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num">48<span>+</span></div>
+    <div class="stat-label">Tamamlanan Proje</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num">32<span>+</span></div>
+    <div class="stat-label">Mutlu Müşteri</div>
+  </div>
+  <div class="stat-item reveal">
+    <div class="stat-num">12<span>+</span></div>
+    <div class="stat-label">Ödül & Başarı</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div>
+    <span class="section-label reveal">Hakkımda</span>
+  </div>
+  <div class="about-content">
+    <h2 class="about-headline reveal">Güzelliği <em>işlevsellikle</em> birleştiriyorum</h2>
+    <p class="about-text reveal">
+      İstanbul'da yaşayan bir yaratıcı geliştirici ve arayüz tasarımcısıyım. Her projede kullanıcı deneyimini ön planda tutarak, estetik açıdan güçlü ve teknik olarak sağlam çözümler üretiyorum.
+    </p>
+    <p class="about-text reveal">
+      Tasarım ve geliştirme dünyasının kesişim noktasında çalışıyorum. Bir fikri konseptten canlıya taşıma sürecinin her aşamasında aktif rol alıyorum.
+    </p>
+    <div class="skills-grid reveal">
+      <div class="skill-item">React / Next.js</div>
+      <div class="skill-item">TypeScript</div>
+      <div class="skill-item">Figma</div>
+      <div class="skill-item">Node.js</div>
+      <div class="skill-item">Motion Design</div>
+      <div class="skill-item">Three.js</div>
+      <div class="skill-item">UI / UX Design</div>
+      <div class="skill-item">CSS / GSAP</div>
+      <div class="skill-item">Brand Identity</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-left">
+    <h2 class="contact-headline reveal">Birlikte bir şey <em>yaratalım</em></h2>
+    <p class="contact-sub reveal">
+      Yeni bir proje için hazır mısın? Fikrinden son ürüne kadar her adımda seninle olmak isterim.
+    </p>
+    <a href="mailto:adın@email.com" class="contact-email reveal">adın@email.com</a>
+  </div>
+  <div class="contact-right reveal">
+    <div class="contact-form">
+      <div class="form-group">
+        <label>İsim</label>
+        <input type="text" placeholder="Adın Soyadın">
+      </div>
+      <div class="form-group">
+        <label>E-posta</label>
+        <input type="email" placeholder="email@adresin.com">
+      </div>
+      <div class="form-group">
+        <label>Mesaj</label>
+        <textarea rows="4" placeholder="Projen hakkında anlat..."></textarea>
+      </div>
+      <button class="form-submit">
+        Gönder
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Adın Soyadın</div>
+  <div class="footer-copy">© 2025 — Tüm hakları saklıdır</div>
+  <div class="footer-links">
+    <a href="#">Dribbble</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">GitHub</a>
+    <a href="#">Twitter</a>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+  });
+
+  function animateRing() {
+    ringX += (mouseX - ringX) * 0.12;
+    ringY += (mouseY - ringY) * 0.12;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  // Hover effects
+  document.querySelectorAll('a, button, .project-item, .skill-item').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '20px';
+      cursor.style.height = '20px';
+      ring.style.width = '60px';
+      ring.style.height = '60px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '12px';
+      cursor.style.height = '12px';
+      ring.style.width = '40px';
+      ring.style.height = '40px';
+    });
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Stagger project items
+  document.querySelectorAll('.project-item').forEach((item, i) => {
+    item.style.transitionDelay = (i * 0.07) + 's';
+  });
+</script>
+</body>
+</html>
